@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Kelola Produk — SmartShop Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="admin-page-head">
+    <h1 class="page-title">📦 Kelola Produk</h1>
+    <a href="{{ url_for('admin_add_product') }}" class="btn btn-primary">➕ Tambah Produk</a>
+  </div>
+
+  {% if products %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nama Produk</th>
+          <th>Kategori</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>
+            <div class="product-table-name">
+              <div class="product-table-initial">{{ p.name[0] }}</div>
+              <span>{{ p.name }}</span>
+            </div>
+          </td>
+          <td><span class="cat-badge">{{ p.category }}</span>
+          <td>{{ p.format_price() }}</td>
+          <td>
+            <span class="{% if p.stock == 0 %}text-danger{% elif p.stock < 5 %}text-warning{% else %}text-success{% endif %}">
+              {{ p.stock }} unit
+            </span>
+          </td>
+          <td>
+            {% if p.is_available() %}
+              <span class="badge badge-green">Tersedia</span>
+            {% else %}
+              <span class="badge badge-red">Habis</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="action-group">
+              <a href="{{ url_for('admin_edit_product', product_id=p.product_id) }}"
+                class="btn btn-sm btn-outline">✏️ Edit</a>
+              <form method="POST"
+                action="{{ url_for('admin_delete_product', product_id=p.product_id) }}"
+                style="display:inline"
+                onsubmit="return confirm('Hapus produk {{ p.name }}?')">
+                <button type="submit" class="btn btn-sm btn-danger">🗑 Hapus</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Belum Ada Produk</h3>
+    <p>Mulai tambahkan produk untuk dijual.</p>
+    <a href="{{ url_for('admin_add_product') }}" class="btn btn-primary">➕ Tambah Produk Pertama</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

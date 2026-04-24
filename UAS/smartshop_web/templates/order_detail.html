@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Detail Pesanan — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">📋 Detail Pesanan</h1>
+  <div class="order-detail-wrap">
+
+    <!-- Status Tracker -->
+    <div class="status-tracker">
+      {% set steps = [('pending','⏳','Menunggu Bayar'),('paid','💳','Bukti Dikirim'),('dikirim','🚚','Dikirim'),('selesai','🎉','Selesai')] %}
+      {% for s_key, s_icon, s_label in steps %}
+      <div class="tracker-step {% if transaction.status == s_key %}active{% elif transaction.status in ['paid','verified','dikirim','selesai'] and s_key == 'pending' %}done{% elif transaction.status in ['dikirim','selesai'] and s_key == 'paid' %}done{% elif transaction.status == 'selesai' and s_key == 'dikirim' %}done{% endif %}">
+        <div class="tracker-dot">{{ s_icon }}</div>
+        <span class="tracker-label">{{ s_label }}</span>
+      </div>
+      {% if not loop.last %}<div class="tracker-line"></div>{% endif %}
+      {% endfor %}
+    </div>
+
+    {% if transaction.status == 'ditolak' %}
+    <div class="alert alert-danger" style="margin-bottom:1rem">
+      ❌ <strong>Pembayaran Ditolak.</strong>
+      {% if transaction.note %} Alasan: {{ transaction.note }}{% endif %}
+      <br><a href="{{ url_for('upload_proof', transaction_id=transaction.transaction_id) }}"
+        class="btn btn-primary btn-sm" style="margin-top:0.5rem">Upload Ulang Bukti</a>
+    </div>
+    {% endif %}
+
+    <div class="order-detail-grid">
+      <!-- Info Transaksi -->
+      <div class="detail-section-box">
+        <h3 class="detail-section-title">Info Transaksi</h3>
+        <div class="info-rows">
+          <div class="info-row"><span>ID Transaksi</span><span class="mono">{{ transaction.transaction_id[:16] }}...</span></div>
+          <div class="info-row"><span>Tanggal</span><span>{{ transaction.created_at }}</span></div>
+          <div class="info-row"><span>Metode Bayar</span><span>{{ transaction.payment_method or '-' }}</span></div>
+          <div class="info-row"><span>Alamat Kirim</span><span>{{ transaction.address }}</span></div>
+          <div class="info-row"><span>Status</span>
+            <span class="badge {{ transaction.get_status_badge() }}">
+              {{ transaction.get_status_icon() }} {{ transaction.get_status_label() }}
+            </span>
+          </div>
+          {% if transaction.note %}
+          <div class="info-row"><span>Catatan Admin</span><span class="note-text">{{ transaction.note }}</span></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Item Pesanan -->
+      <div class="detail-section-box">
+        <h3 class="detail-section-title">Item Pesanan</h3>
+        {% for item in transaction["items"] %}
+        <div class="order-item-detail-row">
+          <div class="item-detail-img">{{ item.name[0] }}</div>
+          <div class="item-detail-info">
+            <p class="item-detail-name">{{ item.name }}</p>
+            <p class="item-detail-meta">Rp {{ "{:,.0f}".format(item.price).replace(",",".") }} × {{ item.quantity }}</p>
+          </div>
+          <div class="item-detail-sub">Rp {{ "{:,.0f}".format(item.price * item.quantity).replace(",",".") }}</div>
+        </div>
+        {% endfor %}
+        <div class="order-total-row">
+          <span>Total Pembayaran</span>
+          <span class="price-highlight">{{ transaction.format_total() }}</span>
+        </div>
+      </div>
+    </div>
+
+    {% if transaction.payment_proof %}
+    <div class="detail-section-box" style="margin-top:1.5rem">
+      <h3 class="detail-section-title">Bukti Pembayaran</h3>
+      <img src="{{ url_for('static', filename='images/proofs/' + transaction.payment_proof) }}"
+        alt="Bukti Pembayaran"
+        style="max-width:100%;max-height:350px;border-radius:8px;border:1px solid #e0e0e0">
+    </div>
+    {% endif %}
+
+    {% if transaction.can_upload_proof() %}
+    <div style="text-align:center;margin-top:1.5rem">
+      <a href="{{ url_for('upload_proof', transaction_id=transaction.transaction_id) }}"
+        class="btn btn-primary btn-lg">📤 Upload Bukti Pembayaran</a>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center;margin-top:1rem">
+      <a href="{{ url_for('my_orders') }}" class="back-link">← Kembali ke Daftar Pesanan</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

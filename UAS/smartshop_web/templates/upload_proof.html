@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Upload Bukti Bayar — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">💳 Upload Bukti Pembayaran</h1>
+  <div class="upload-wrap">
+    <div class="txn-info-box">
+      <h3>Detail Pesanan</h3>
+      <div class="txn-info-grid">
+        <div class="txn-info-row"><span class="txn-label">ID Transaksi</span><span class="txn-val mono">{{ transaction.transaction_id[:16] }}...</span></div>
+        <div class="txn-info-row"><span class="txn-label">Total Bayar</span><span class="txn-val price-highlight">{{ transaction.format_total() }}</span></div>
+        <div class="txn-info-row"><span class="txn-label">Metode</span><span class="txn-val">{{ transaction.payment_method }}</span></div>
+        <div class="txn-info-row"><span class="txn-label">Alamat Kirim</span><span class="txn-val">{{ transaction.address }}</span></div>
+      </div>
+      <div class="txn-items">
+        <p class="txn-items-title">Item dipesan:</p>
+        {% for item in transaction.items %}
+        <div class="txn-item-row">
+          <span>{{ item.name }} ×{{ item.quantity }}</span>
+          <span>Rp {{ "{:,.0f}".format(item.price * item.quantity).replace(",",".") }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="payment-instruction-box">
+      {% if 'GoPay' in transaction.payment_method %}
+        <div class="instr-header">💚 GoPay</div><p class="instr-number">0812-3456-7890 <span>(SmartShop Official)</span></p>
+      {% elif 'OVO' in transaction.payment_method %}
+        <div class="instr-header">💜 OVO</div><p class="instr-number">0812-3456-7890 <span>(SmartShop Official)</span></p>
+      {% elif 'DANA' in transaction.payment_method %}
+        <div class="instr-header">💙 DANA</div><p class="instr-number">0812-3456-7890 <span>(SmartShop Official)</span></p>
+      {% elif 'ShopeePay' in transaction.payment_method %}
+        <div class="instr-header">🧡 ShopeePay</div><p class="instr-number">0812-3456-7890 <span>(SmartShop Official)</span></p>
+      {% elif 'BCA' in transaction.payment_method %}
+        <div class="instr-header">🔵 Bank BCA</div><p class="instr-number">1234-5678-90 <span>a.n SmartShop Indonesia</span></p>
+      {% elif 'Mandiri' in transaction.payment_method %}
+        <div class="instr-header">🟡 Bank Mandiri</div><p class="instr-number">9876-5432-10 <span>a.n SmartShop Indonesia</span></p>
+      {% elif 'BRI' in transaction.payment_method %}
+        <div class="instr-header">🔵 Bank BRI</div><p class="instr-number">1111-2222-3333 <span>a.n SmartShop Indonesia</span></p>
+      {% elif 'BNI' in transaction.payment_method %}
+        <div class="instr-header">🟠 Bank BNI</div><p class="instr-number">4444-5555-6666 <span>a.n SmartShop Indonesia</span></p>
+      {% endif %}
+      <p class="instr-amount">Nominal: <strong>{{ transaction.format_total() }}</strong></p>
+      <p class="instr-note">⚠️ Transfer sesuai nominal persis agar mudah diverifikasi!</p>
+    </div>
+
+    <div class="upload-form-box">
+      <h3>Upload Bukti Transfer</h3>
+      <p class="upload-hint">Format: JPG, PNG, JPEG — Maksimal 5MB</p>
+      <form method="POST"
+        action="{{ url_for('upload_proof', transaction_id=transaction.transaction_id) }}"
+        enctype="multipart/form-data" class="upload-form">
+        <div class="file-drop-zone" id="dropZone" onclick="document.getElementById('proofFile').click()">
+          <div class="drop-icon">📎</div>
+          <p id="dropText">Klik atau seret file ke sini</p>
+          <p class="drop-hint">JPG / PNG / JPEG</p>
+        </div>
+        <input type="file" name="proof" id="proofFile"
+          accept=".jpg,.jpeg,.png,.gif,.webp" style="display:none"
+          onchange="previewFile(this)" required>
+        <div id="previewWrap" style="display:none;margin-top:1rem;text-align:center">
+          <img id="previewImg" src="" alt="Preview"
+            style="max-width:100%;max-height:220px;border-radius:8px;border:2px solid #1a73e8">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:1rem">
+          📤 Upload Bukti Pembayaran
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+function previewFile(inp){
+  const f=inp.files[0];
+  if(f){
+    document.getElementById('dropText').textContent=f.name;
+    const r=new FileReader();
+    r.onload=e=>{
+      document.getElementById('previewImg').src=e.target.result;
+      document.getElementById('previewWrap').style.display='block';
+    };
+    r.readAsDataURL(f);
+  }
+}
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('drag-over');
+  const fi=document.getElementById('proofFile');
+  fi.files=e.dataTransfer.files;previewFile(fi);
+});
+</script>
+{% endblock %}

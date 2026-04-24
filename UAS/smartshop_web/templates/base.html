@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartShop{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="{{ url_for('index') }}" class="nav-brand">
+      <span class="brand-icon">🛍️</span>
+      <span class="brand-text">SmartShop</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      {% if session.get('user_id') %}
+        {% if session.get('role') == 'admin' %}
+          <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint=='admin_dashboard' %}active{% endif %}">Dashboard</a></li>
+          <li><a href="{{ url_for('admin_products') }}" class="nav-link {% if 'product' in (request.endpoint or '') %}active{% endif %}">Produk</a></li>
+          <li><a href="{{ url_for('admin_transactions') }}" class="nav-link {% if 'transaction' in (request.endpoint or '') or 'verify' in (request.endpoint or '') %}active{% endif %}">Transaksi</a></li>
+          <li><span class="nav-badge">👑 Admin</span></li>
+          <li><a href="{{ url_for('logout') }}" class="btn btn-outline-sm">Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint=='home' %}active{% endif %}">Produk</a></li>
+          <li>
+            <a href="{{ url_for('cart') }}" class="nav-link cart-link {% if request.endpoint=='cart' %}active{% endif %}">
+              🛒 Keranjang
+              {% if session.get('cart_count', 0) > 0 %}
+                <span class="cart-badge">{{ session.get('cart_count', 0) }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li><a href="{{ url_for('my_orders') }}" class="nav-link {% if request.endpoint in ['my_orders','order_status'] %}active{% endif %}">Pesanan Saya</a></li>
+          <li><span class="nav-user">👤 {{ session.get('full_name','User')|truncate(15,true,'…') }}</span></li>
+          <li><a href="{{ url_for('logout') }}" class="btn btn-outline-sm">Logout</a></li>
+        {% endif %}
+      {% else %}
+        <li><a href="{{ url_for('login') }}" class="btn btn-outline-sm">Login</a></li>
+        <li><a href="{{ url_for('register') }}" class="btn btn-primary-sm">Daftar</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          <span>{{ message }}</span>
+          <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>🛍️ <strong>SmartShop</strong></span>
+    <span>© 2024 SmartShop — Belanja mudah, aman, dan terpercaya.</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

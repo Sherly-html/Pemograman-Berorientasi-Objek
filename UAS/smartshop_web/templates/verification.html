@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Verifikasi Pembayaran — SmartShop Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="admin-page-head">
+    <h1 class="page-title">✅ Verifikasi Pembayaran</h1>
+    <a href="{{ url_for('admin_transactions') }}" class="btn btn-outline">← Kembali</a>
+  </div>
+
+  <div class="verify-wrap">
+    <!-- Info Transaksi -->
+    <div class="verify-info-col">
+      <div class="detail-section-box">
+        <h3 class="detail-section-title">Info Transaksi</h3>
+        <div class="info-rows">
+          <div class="info-row"><span>ID</span><span class="mono">{{ transaction.transaction_id[:16] }}...</span></div>
+          <div class="info-row"><span>Customer</span><span><strong>{{ transaction.username }}</strong></span></div>
+          <div class="info-row"><span>Total</span><span class="price-highlight">{{ transaction.format_total() }}</span></div>
+          <div class="info-row"><span>Metode</span><span>{{ transaction.payment_method }}</span></div>
+          <div class="info-row"><span>Alamat</span><span>{{ transaction.address }}</span></div>
+          <div class="info-row"><span>Tanggal</span><span>{{ transaction.created_at }}</span></div>
+          <div class="info-row">
+            <span>Status</span>
+            <span class="badge {{ transaction.get_status_badge() }}">
+              {{ transaction.get_status_icon() }} {{ transaction.get_status_label() }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section-box" style="margin-top:1rem">
+        <h3 class="detail-section-title">Item Pesanan</h3>
+        {% for item in transaction["items"] %}
+        <div class="order-item-detail-row">
+          <div class="item-detail-img">{{ item.name[0] }}</div>
+          <div class="item-detail-info">
+            <p class="item-detail-name">{{ item.name }}</p>
+            <p class="item-detail-meta">Rp {{ "{:,.0f}".format(item.price).replace(",",".") }} × {{ item.quantity }}</p>
+          </div>
+          <div class="item-detail-sub">Rp {{ "{:,.0f}".format(item.price * item.quantity).replace(",",".") }}</div>
+        </div>
+        {% endfor %}
+        <div class="order-total-row">
+          <span>Total</span>
+          <span class="price-highlight">{{ transaction.format_total() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bukti & Aksi -->
+    <div class="verify-action-col">
+      <!-- Bukti Pembayaran -->
+      <div class="detail-section-box">
+        <h3 class="detail-section-title">Bukti Pembayaran</h3>
+        {% if transaction.payment_proof %}
+        <img src="{{ url_for('static', filename='images/proofs/' + transaction.payment_proof) }}"
+          alt="Bukti Pembayaran"
+          style="width:100%;max-height:320px;object-fit:contain;border-radius:8px;border:1px solid #e0e0e0;cursor:pointer"
+          onclick="this.style.maxHeight=this.style.maxHeight=='none'?'320px':'none'">
+        <p style="font-size:0.8rem;color:#888;margin-top:0.5rem;text-align:center">
+          Klik gambar untuk perbesar/perkecil
+        </p>
+        {% else %}
+        <div class="empty-state" style="padding:2rem">
+          <div class="empty-icon">📎</div>
+          <p>Belum ada bukti pembayaran yang diupload.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Form Verifikasi -->
+      {% if transaction.payment_proof and transaction.status == 'paid' %}
+      <div class="detail-section-box" style="margin-top:1rem">
+        <h3 class="detail-section-title">Keputusan Admin</h3>
+        <form method="POST"
+          action="{{ url_for('admin_verify', transaction_id=transaction.transaction_id) }}">
+          <div class="form-group">
+            <label class="form-label">Catatan (opsional)</label>
+            <textarea name="note" class="form-input form-textarea" rows="2"
+              placeholder="Catatan untuk customer..."></textarea>
+          </div>
+          <div class="verify-btn-group">
+            <button type="submit" name="action" value="approve"
+              class="btn btn-success btn-lg"
+              onclick="return confirm('Approve pembayaran ini? Status akan berubah ke Dikirim.')">
+              ✅ Approve — Kirim Barang
+            </button>
+            <button type="submit" name="action" value="reject"
+              class="btn btn-danger btn-lg"
+              onclick="return confirm('Tolak pembayaran ini?')">
+              ❌ Tolak Pembayaran
+            </button>
+          </div>
+        </form>
+      </div>
+      {% elif transaction.status != 'paid' %}
+      <div class="info-box" style="margin-top:1rem">
+        ℹ️ Transaksi ini sudah diproses sebelumnya dengan status:
+        <strong>{{ transaction.get_status_label() }}</strong>
+        {% if transaction.note %}<br>Catatan: {{ transaction.note }}{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

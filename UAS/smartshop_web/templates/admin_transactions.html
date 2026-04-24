@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Transaksi — SmartShop Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="admin-page-head">
+    <h1 class="page-title">🧾 Daftar Transaksi</h1>
+  </div>
+
+  <!-- Filter Status -->
+  <div class="filter-tabs">
+    <a href="{{ url_for('admin_transactions') }}"
+      class="filter-tab {% if not status_filter %}active{% endif %}">Semua</a>
+    <a href="{{ url_for('admin_transactions', status='pending') }}"
+      class="filter-tab {% if status_filter=='pending' %}active{% endif %}">⏳ Menunggu</a>
+    <a href="{{ url_for('admin_transactions', status='paid') }}"
+      class="filter-tab {% if status_filter=='paid' %}active{% endif %}">💳 Bukti Masuk</a>
+    <a href="{{ url_for('admin_transactions', status='dikirim') }}"
+      class="filter-tab {% if status_filter=='dikirim' %}active{% endif %}">🚚 Dikirim</a>
+    <a href="{{ url_for('admin_transactions', status='selesai') }}"
+      class="filter-tab {% if status_filter=='selesai' %}active{% endif %}">🎉 Selesai</a>
+    <a href="{{ url_for('admin_transactions', status='ditolak') }}"
+      class="filter-tab {% if status_filter=='ditolak' %}active{% endif %}">❌ Ditolak</a>
+  </div>
+
+  {% if transactions %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID Transaksi</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Metode Bayar</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td class="mono">{{ t.transaction_id[:12] }}...</td>
+          <td><strong>{{ t.username }}</strong></td>
+          <td>{{ t.format_total() }}</td>
+          <td style="font-size:0.85rem">{{ t.payment_method or '-' }}</td>
+          <td style="font-size:0.85rem">{{ t.created_at }}</td>
+          <td>
+            <span class="badge {{ t.get_status_badge() }}">
+              {{ t.get_status_icon() }} {{ t.get_status_label() }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('admin_verify', transaction_id=t.transaction_id) }}"
+              class="btn btn-sm {% if t.status == 'paid' %}btn-primary{% else %}btn-outline{% endif %}">
+              {% if t.status == 'paid' %}✅ Verifikasi{% else %}👁 Detail{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Tidak ada transaksi</h3>
+    <p>{% if status_filter %}Tidak ada transaksi dengan status "{{ status_filter }}".{% else %}Belum ada transaksi apapun.{% endif %}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

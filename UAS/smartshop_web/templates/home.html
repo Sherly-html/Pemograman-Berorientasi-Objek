@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}SmartShop — Belanja Online{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Belanja Lebih Mudah<br>di <span class="hero-hl">SmartShop</span></h1>
+    <p class="hero-sub">Temukan ribuan produk pilihan dengan harga terbaik</p>
+    <a href="#products" class="btn btn-primary btn-lg">Lihat Produk ↓</a>
+  </div>
+  <div class="hero-deco">🛍️</div>
+</section>
+
+<section class="section" id="products">
+  <div class="section-head">
+    <h2 class="section-title">Produk Pilihan</h2>
+    <span class="section-count">{{ products|length }} produk tersedia</span>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="searchInput" class="search-input"
+      placeholder="🔍  Cari produk..." oninput="filterProducts()">
+    <select id="categoryFilter" class="category-select" onchange="filterProducts()">
+      <option value="">Semua Kategori</option>
+      {% set seen = [] %}
+      {% for p in products %}
+        {% if p.category not in seen %}
+          {% if seen.append(p.category) %}{% endif %}
+          <option value="{{ p.category }}">{{ p.category }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+
+  {% if products %}
+  <div class="product-grid" id="productGrid">
+    {% for product in products %}
+    <div class="product-card" data-name="{{ product.name|lower }}" data-category="{{ product.category }}">
+      <a href="{{ url_for('product_detail', product_id=product.product_id) }}" class="product-img-link">
+        <div class="product-img">
+          <span class="product-initial">{{ product.name[0] }}</span>
+          {% if not product.is_available() %}
+            <div class="sold-out-overlay">Habis</div>
+          {% endif %}
+        </div>
+        <span class="cat-tag">{{ product.category }}</span>
+      </a>
+      <div class="product-body">
+        <a href="{{ url_for('product_detail', product_id=product.product_id) }}">
+          <h3 class="product-name">{{ product.name }}</h3>
+        </a>
+        <p class="product-desc">{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
+        <div class="product-foot">
+          <span class="product-price">{{ product.format_price() }}</span>
+          <span class="stock-info {% if product.stock < 5 and product.stock > 0 %}low{% endif %}">
+            {% if product.is_available() %}Stok: {{ product.stock }}{% else %}Habis{% endif %}
+          </span>
+        </div>
+        {% if session.get('role') == 'customer' and product.is_available() %}
+        <form method="POST" action="{{ url_for('add_to_cart') }}">
+          <input type="hidden" name="product_id" value="{{ product.product_id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button type="submit" class="btn btn-cart">+ Keranjang</button>
+        </form>
+        {% elif not session.get('user_id') %}
+        <a href="{{ url_for('login') }}" class="btn btn-cart-outline">Login untuk beli</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="emptyFilter" class="empty-state" style="display:none;">
+    <div class="empty-icon">🔍</div>
+    <h3>Produk tidak ditemukan</h3>
+    <p>Coba kata kunci atau kategori lain</p>
+    <button class="btn btn-outline" onclick="clearFilter()">Tampilkan Semua</button>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Belum ada produk</h3>
+    <p>Admin belum menambahkan produk apapun.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

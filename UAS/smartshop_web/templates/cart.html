@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Keranjang — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">🛒 Keranjang Belanja</h1>
+  {% if cart["items"] %}
+  <div class="cart-wrap">
+    <div class="cart-items">
+      {% for item in cart["items"] %}
+      <div class="cart-row">
+        <div class="cart-img">{{ item.name[0] }}</div>
+        <div class="cart-info">
+          <h3 class="cart-item-name">{{ item.name }}</h3>
+          <p class="cart-item-price">Rp {{ "{:,.0f}".format(item.price).replace(",",".") }} / pcs</p>
+        </div>
+        <div class="cart-qty-ctrl">
+          <form method="POST" action="{{ url_for('update_cart') }}" style="display:inline">
+            <input type="hidden" name="product_id" value="{{ item.product_id }}">
+            <input type="hidden" name="action" value="decrease">
+            <button type="submit" class="qty-btn">−</button>
+          </form>
+          <span class="qty-display">{{ item.quantity }}</span>
+          <form method="POST" action="{{ url_for('update_cart') }}" style="display:inline">
+            <input type="hidden" name="product_id" value="{{ item.product_id }}">
+            <input type="hidden" name="action" value="increase">
+            <button type="submit" class="qty-btn">+</button>
+          </form>
+        </div>
+        <div class="cart-subtotal">Rp {{ "{:,.0f}".format(item.price * item.quantity).replace(",",".") }}</div>
+        <form method="POST" action="{{ url_for('update_cart') }}">
+          <input type="hidden" name="product_id" value="{{ item.product_id }}">
+          <input type="hidden" name="action" value="remove">
+          <button type="submit" class="btn-remove" title="Hapus">🗑</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="cart-summary">
+      <h3 class="summary-title">Ringkasan Belanja</h3>
+      <div class="summary-row">
+        <span>Subtotal ({{ cart["items"]|length }} produk)</span>
+        <span>Rp {{ "{:,.0f}".format(total).replace(",",".") }}</span>
+      </div>
+      <div class="summary-row"><span>Ongkos Kirim</span><span class="free-ship">Gratis 🎉</span></div>
+      <div class="summary-divider"></div>
+      <div class="summary-total">
+        <span>Total Pembayaran</span>
+        <span>Rp {{ "{:,.0f}".format(total).replace(",",".") }}</span>
+      </div>
+      <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-full">Checkout Sekarang →</a>
+      <form method="POST" action="{{ url_for('clear_cart') }}" style="margin-top:0.75rem">
+        <button type="submit" class="btn btn-outline btn-full"
+          onclick="return confirm('Yakin ingin mengosongkan keranjang?')">
+          🗑 Kosongkan Keranjang
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🛒</div>
+    <h3>Keranjang Masih Kosong</h3>
+    <p>Yuk, tambahkan produk ke keranjang kamu!</p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Lihat Produk</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

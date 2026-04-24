@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb">
+    <a href="{{ url_for('home') }}">Produk</a>
+    <span>›</span><span>{{ product.category }}</span>
+    <span>›</span><span class="bc-active">{{ product.name }}</span>
+  </nav>
+  <div class="detail-wrap">
+    <div class="detail-img-col">
+      <div class="detail-img"><span class="detail-initial">{{ product.name[0] }}</span></div>
+      <div class="detail-tags">
+        <span class="badge badge-blue">{{ product.category }}</span>
+        {% if not product.is_available() %}<span class="badge badge-red">Stok Habis</span>
+        {% elif product.stock < 5 %}<span class="badge badge-yellow">Stok Terbatas</span>
+        {% else %}<span class="badge badge-green">Tersedia</span>{% endif %}
+      </div>
+    </div>
+    <div class="detail-info-col">
+      <h1 class="detail-name">{{ product.name }}</h1>
+      <div class="detail-price">{{ product.format_price() }}</div>
+      <div class="detail-meta-grid">
+        <div class="meta-item"><span class="meta-label">Kategori</span><span class="meta-val">{{ product.category }}</span></div>
+        <div class="meta-item"><span class="meta-label">Stok</span><span class="meta-val">{{ product.stock }} unit</span></div>
+      </div>
+      <div class="detail-desc-box">
+        <h3>Deskripsi Produk</h3>
+        <p>{{ product.description }}</p>
+      </div>
+      {% if session.get('role') == 'customer' %}
+        {% if product.is_available() %}
+        <form method="POST" action="{{ url_for('add_to_cart') }}" class="detail-form">
+          <input type="hidden" name="product_id" value="{{ product.product_id }}">
+          <div class="qty-row">
+            <label class="form-label">Jumlah</label>
+            <div class="qty-ctrl">
+              <button type="button" class="qty-btn" onclick="adjQty(-1)">−</button>
+              <input type="number" name="quantity" id="qtyInput"
+                value="1" min="1" max="{{ product.stock }}" class="qty-input">
+              <button type="button" class="qty-btn" onclick="adjQty(1)">+</button>
+            </div>
+            <span class="qty-max">Maks {{ product.stock }}</span>
+          </div>
+          <div class="detail-btns">
+            <button type="submit" class="btn btn-primary btn-lg">🛒 Tambah ke Keranjang</button>
+            <a href="{{ url_for('cart') }}" class="btn btn-outline btn-lg">Lihat Keranjang</a>
+          </div>
+        </form>
+        {% else %}
+        <div class="oos-msg">😔 Maaf, produk ini sedang tidak tersedia.</div>
+        {% endif %}
+      {% elif not session.get('user_id') %}
+      <a href="{{ url_for('login') }}" class="btn btn-primary">Login untuk Beli</a>
+      {% endif %}
+      <a href="{{ url_for('home') }}" class="back-link">← Kembali ke Produk</a>
+    </div>
+  </div>
+</div>
+<script>
+function adjQty(d){const i=document.getElementById('qtyInput');const v=parseInt(i.value)+d;if(v>=1&&v<=parseInt(i.max))i.value=v;}
+</script>
+{% endblock %}

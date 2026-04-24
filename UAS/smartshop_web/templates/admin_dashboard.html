@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Admin — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="admin-page-head">
+    <h1 class="page-title">📊 Dashboard Admin</h1>
+    <p class="admin-welcome">Selamat datang, <strong>{{ session.get('full_name','Admin') }}</strong>!</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card stat-blue">
+      <div class="stat-icon">📦</div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats.total_products }}</span>
+        <span class="stat-label">Total Produk</span>
+      </div>
+    </div>
+    <div class="stat-card stat-green">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats.total_customers }}</span>
+        <span class="stat-label">Total Customer</span>
+      </div>
+    </div>
+    <div class="stat-card stat-purple">
+      <div class="stat-icon">🧾</div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats.total_transactions }}</span>
+        <span class="stat-label">Total Transaksi</span>
+      </div>
+    </div>
+    <div class="stat-card stat-gold">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <span class="stat-number">Rp {{ "{:,.0f}".format(stats.revenue).replace(",",".") }}</span>
+        <span class="stat-label">Total Pendapatan</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Summary -->
+  <div class="status-summary">
+    <h3 class="summary-section-title">Ringkasan Status Transaksi</h3>
+    <div class="status-chips">
+      <a href="{{ url_for('admin_transactions', status='pending') }}" class="status-chip chip-warning">
+        ⏳ Menunggu <span>{{ stats.pending }}</span>
+      </a>
+      <a href="{{ url_for('admin_transactions', status='paid') }}" class="status-chip chip-info">
+        💳 Bukti Masuk <span>{{ stats.paid }}</span>
+      </a>
+      <a href="{{ url_for('admin_transactions', status='dikirim') }}" class="status-chip chip-primary">
+        🚚 Dikirim <span>{{ stats.shipping }}</span>
+      </a>
+      <a href="{{ url_for('admin_transactions', status='selesai') }}" class="status-chip chip-success">
+        🎉 Selesai <span>{{ stats.done }}</span>
+      </a>
+      <a href="{{ url_for('admin_transactions', status='ditolak') }}" class="status-chip chip-danger">
+        ❌ Ditolak <span>{{ stats.rejected }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h3 class="summary-section-title">Aksi Cepat</h3>
+    <div class="action-btns">
+      <a href="{{ url_for('admin_add_product') }}" class="btn btn-primary">➕ Tambah Produk</a>
+      <a href="{{ url_for('admin_transactions', status='paid') }}" class="btn btn-outline">
+        💳 Verifikasi Pembayaran
+        {% if stats.paid > 0 %}<span class="btn-badge">{{ stats.paid }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('admin_products') }}" class="btn btn-outline">📦 Kelola Produk</a>
+      <a href="{{ url_for('admin_transactions') }}" class="btn btn-outline">📋 Semua Transaksi</a>
+    </div>
+  </div>
+
+  <!-- Transaksi Terbaru -->
+  <div class="recent-section">
+    <div class="recent-head">
+      <h3 class="summary-section-title">Transaksi Terbaru</h3>
+      <a href="{{ url_for('admin_transactions') }}" class="link">Lihat semua →</a>
+    </div>
+    {% if recent %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID Transaksi</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Metode</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in recent %}
+          <tr>
+            <td class="mono">{{ t.transaction_id[:12] }}...</td>
+            <td>{{ t.username }}</td>
+            <td>{{ t.format_total() }}</td>
+            <td>{{ t.payment_method or '-' }}</td>
+            <td><span class="badge {{ t.get_status_badge() }}">{{ t.get_status_icon() }} {{ t.get_status_label() }}</span></td>
+            <td>
+              <a href="{{ url_for('admin_verify', transaction_id=t.transaction_id) }}"
+                class="btn btn-sm btn-outline">Detail</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding:2rem">
+      <p>Belum ada transaksi.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

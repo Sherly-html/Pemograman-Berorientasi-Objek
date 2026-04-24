@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Pesanan Saya — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">📦 Pesanan Saya</h1>
+  {% if transactions %}
+  <div class="orders-list">
+    {% for t in transactions %}
+    <div class="order-card">
+      <div class="order-card-head">
+        <div>
+          <span class="order-id mono">#{{ t.transaction_id[:12] }}...</span>
+          <span class="order-date">{{ t.created_at }}</span>
+        </div>
+        <span class="badge {{ t.get_status_badge() }}">
+          {{ t.get_status_icon() }} {{ t.get_status_label() }}
+        </span>
+      </div>
+      <div class="order-card-body">
+        <div class="order-items-preview">
+          {% for item in t["items"][:3] %}
+          <span class="order-item-chip">{{ item.name }} ×{{ item.quantity }}</span>
+          {% endfor %}
+          {% if t["items"]|length > 3 %}
+          <span class="order-item-chip muted">+{{ t["items"]|length - 3 }} lainnya</span>
+          {% endif %}
+        </div>
+        <div class="order-total">{{ t.format_total() }}</div>
+      </div>
+      <div class="order-card-foot">
+        <span class="order-method">{{ t.payment_method or '-' }}</span>
+        <div class="order-actions">
+          {% if t.can_upload_proof() %}
+          <a href="{{ url_for('upload_proof', transaction_id=t.transaction_id) }}"
+            class="btn btn-primary btn-sm">Upload Bukti</a>
+          {% endif %}
+          <a href="{{ url_for('order_status', transaction_id=t.transaction_id) }}"
+            class="btn btn-outline btn-sm">Detail →</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Belum Ada Pesanan</h3>
+    <p>Kamu belum melakukan pembelian apapun.</p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Mulai Belanja</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

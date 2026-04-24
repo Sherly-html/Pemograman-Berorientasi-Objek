@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Produk — SmartShop Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="admin-page-head">
+    <h1 class="page-title">{% if action=='Tambah' %}➕{% else %}✏️{% endif %} {{ action }} Produk</h1>
+    <a href="{{ url_for('admin_products') }}" class="btn btn-outline">← Kembali</a>
+  </div>
+
+  <div class="form-card">
+    <form method="POST"
+      action="{{ url_for('admin_add_product') if action=='Tambah' else url_for('admin_edit_product', product_id=product.product_id) }}"
+      enctype="multipart/form-data">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nama Produk <span class="required">*</span></label>
+          <input type="text" name="name" class="form-input"
+            placeholder="Nama produk" required
+            value="{{ product.name if product else '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori <span class="required">*</span></label>
+          <select name="category" class="form-input">
+            {% for cat in ['Elektronik','Fashion','Furniture','Aksesori','Rumah Tangga','Olahraga','Umum'] %}
+            <option value="{{ cat }}"
+              {% if product and product.category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Deskripsi <span class="required">*</span></label>
+        <textarea name="description" class="form-input form-textarea" rows="4"
+          placeholder="Deskripsi lengkap produk..." required>{{ product.description if product else '' }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Harga (Rp) <span class="required">*</span></label>
+          <input type="number" name="price" class="form-input"
+            placeholder="Contoh: 150000" min="0" step="1000" required
+            value="{{ product.price if product else '' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stok <span class="required">*</span></label>
+          <input type="number" name="stock" class="form-input"
+            placeholder="Jumlah stok" min="0" required
+            value="{{ product.stock if product else '' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Gambar Produk</label>
+        {% if product and product.image and product.image != 'default.jpg' %}
+        <p style="font-size:0.85rem;color:#666;margin-bottom:0.5rem">
+          Gambar saat ini: <code>{{ product.image }}</code>
+          (biarkan kosong jika tidak ingin mengubah)
+        </p>
+        {% endif %}
+        <div class="file-drop-zone" style="padding:1.5rem" onclick="document.getElementById('imgFile').click()">
+          <div class="drop-icon">🖼️</div>
+          <p id="imgText">Klik untuk pilih gambar produk</p>
+          <p class="drop-hint">JPG / PNG — Opsional</p>
+        </div>
+        <input type="file" name="image" id="imgFile"
+          accept=".jpg,.jpeg,.png,.gif,.webp" style="display:none"
+          onchange="document.getElementById('imgText').textContent=this.files[0].name">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg">
+          {% if action=='Tambah' %}➕ Tambah Produk{% else %}💾 Simpan Perubahan{% endif %}
+        </button>
+        <a href="{{ url_for('admin_products') }}" class="btn btn-outline btn-lg">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

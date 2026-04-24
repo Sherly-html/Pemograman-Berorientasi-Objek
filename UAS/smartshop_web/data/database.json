@@ -1,0 +1,172 @@
+{
+  "users": [
+    {
+      "user_id": "admin-001",
+      "username": "admin",
+      "password": "scrypt:32768:8:1$8bXPF9gweJpeejSU$b4d1602536ee7d0b8e3eb80a7333bfd1c110629713cb48067b6e036b64ecde71885ba35f2dfa1383f2a0d22745c10c563ee90bfe51b14b5845c0d82ebbeddcac",
+      "full_name": "Administrator",
+      "phone": "08000000000",
+      "role": "admin"
+    },
+    {
+      "user_id": "b4644cb3-ff06-4f52-9c70-7003a7e8a5c8",
+      "username": "reyy",
+      "password": "scrypt:32768:8:1$6LThyaWYmhpRHhvP$bfe4f3fcc2a5f8558f6242d3f51d605ff9313789a9c55d7f847fffedf5baaca07877ddf5e296e2641f501fb70d6012b6a43f4c509a9e1c0e1a2036a2c3093f0f",
+      "full_name": "reyy",
+      "phone": "81276996445",
+      "role": "customer",
+      "address": "panammmm"
+    }
+  ],
+  "products": [
+    {
+      "product_id": "e598f1f5-a535-43bf-b247-01a823db0263",
+      "name": "Laptop Gaming ASUS ROG Strix",
+      "description": "Laptop gaming performa tinggi dengan prosesor Intel Core i7 Gen 13, RAM 16GB DDR5, SSD 512GB NVMe, GPU RTX 3060 6GB. Ideal untuk gaming dan desain.",
+      "price": 15999000.0,
+      "stock": 10,
+      "image": "default.jpg",
+      "category": "Elektronik"
+    },
+    {
+      "product_id": "c61f83b3-6cf0-4e8a-92ee-b4279f70a8de",
+      "name": "Smartphone Samsung Galaxy S23",
+      "description": "Smartphone flagship terbaru dengan kamera 200MP, layar Dynamic AMOLED 6.1 inch, baterai 3900mAh, prosesor Snapdragon 8 Gen 2.",
+      "price": 9499000.0,
+      "stock": 25,
+      "image": "default.jpg",
+      "category": "Elektronik"
+    },
+    {
+      "product_id": "9248a363-b985-4d49-a60e-1b1236a8cdae",
+      "name": "Sepatu Nike Air Max 270",
+      "description": "Sepatu olahraga premium dengan teknologi Air Max unit terbesar untuk kenyamanan sepanjang hari. Tersedia ukuran 39-45.",
+      "price": 1350000.0,
+      "stock": 50,
+      "image": "default.jpg",
+      "category": "Fashion"
+    },
+    {
+      "product_id": "4982010b-885f-48cd-bbb7-0f30208df615",
+      "name": "Tas Ransel Eiger Adventure",
+      "description": "Tas ransel outdoor premium material cordura, waterproof, kapasitas 30L, kompartemen laptop, cocok untuk hiking dan traveling.",
+      "price": 450000.0,
+      "stock": 30,
+      "image": "default.jpg",
+      "category": "Fashion"
+    },
+    {
+      "product_id": "1c09124d-6bf9-477d-891f-4e1b6fedc461",
+      "name": "Headphone Sony WH-1000XM5",
+      "description": "Headphone wireless over-ear dengan noise cancelling terbaik di kelasnya. Battery 30 jam, koneksi multipoint, kualitas suara Hi-Res Audio.",
+      "price": 4200000.0,
+      "stock": 15,
+      "image": "default.jpg",
+      "category": "Elektronik"
+    },
+    {
+      "product_id": "fbeddf63-12d8-4bef-b459-c98416ba7430",
+      "name": "Kamera Mirrorless Sony Alpha A6400",
+      "description": "Kamera mirrorless APS-C dengan autofocus real-time tracking, video 4K, layar flip, cocok untuk konten kreator dan fotografer.",
+      "price": 8750000.0,
+      "stock": 8,
+      "image": "default.jpg",
+      "category": "Elektronik"
+    },
+    {
+      "product_id": "763650b3-9758-4f70-beb3-de2691ecd1a5",
+      "name": "Kemeja Batik Tulis Premium",
+      "description": "Kemeja batik tulis motif parang asli Solo, bahan katun prima halus, nyaman dipakai untuk acara formal maupun kasual.",
+      "price": 285000.0,
+      "stock": 100,
+      "image": "default.jpg",
+      "category": "Fashion"
+    },
+    {
+      "product_id": "1fba5e03-eaf4-4d43-90b8-718fa47a87ef",
+      "name": "Meja Belajar Minimalis Kayu Jati",
+      "description": "Meja belajar minimalis dari kayu jati solid, finishing natural, ukuran 120x60cm, dilengkapi laci dan rak buku samping.",
+      "price": 1250000.0,
+      "stock": 12,
+      "image": "default.jpg",
+      "category": "Furniture"
+    },
+    {
+      "product_id": "0f1c9e96-0775-4a3b-8f07-8693ffba8d93",
+      "name": "Jam Tangan Casio G-Shock GA-2100",
+      "description": "Jam tangan digital-analog G-Shock dengan desain tipis Octagon, tahan benturan, water resistant 200M, baterai 3 tahun.",
+      "price": 1650000.0,
+      "stock": 20,
+      "image": "default.jpg",
+      "category": "Aksesori"
+    },
+    {
+      "product_id": "79d00875-8d26-4903-b280-f95b4a806d77",
+      "name": "Rice Cooker Miyako 1.8L",
+      "description": "Rice cooker kapasitas 1.8 liter dengan teknologi keep warm otomatis, anti lengket, hemat listrik, cocok untuk keluarga.",
+      "price": 195000.0,
+      "stock": 40,
+      "image": "default.jpg",
+      "category": "Rumah Tangga"
+    }
+  ],
+  "transactions": [
+    {
+      "transaction_id": "d994d8d5-05ad-411b-804f-6a7ec59a5292",
+      "user_id": "b4644cb3-ff06-4f52-9c70-7003a7e8a5c8",
+      "username": "reyy",
+      "items": [
+        {
+          "product_id": "9248a363-b985-4d49-a60e-1b1236a8cdae",
+          "name": "Sepatu Nike Air Max 270",
+          "price": 1350000.0,
+          "quantity": 1,
+          "image": "default.jpg"
+        },
+        {
+          "product_id": "e598f1f5-a535-43bf-b247-01a823db0263",
+          "name": "Laptop Gaming ASUS ROG Strix",
+          "price": 15999000.0,
+          "quantity": 1,
+          "image": "default.jpg"
+        }
+      ],
+      "total": 17349000.0,
+      "address": "panammmm",
+      "payment_method": "E-Wallet (GoPay)",
+      "status": "dikirim",
+      "payment_proof": "proof_d994d8d5_00baadb5.jpg",
+      "payment_id": "3dd8c852-a823-489c-9045-04aac4aa6f34",
+      "note": "",
+      "created_at": "24-04-2026 15:28"
+    },
+    {
+      "transaction_id": "0e067959-7f02-44fb-9d1b-972ca01d639c",
+      "user_id": "b4644cb3-ff06-4f52-9c70-7003a7e8a5c8",
+      "username": "reyy",
+      "items": [
+        {
+          "product_id": "c61f83b3-6cf0-4e8a-92ee-b4279f70a8de",
+          "name": "Smartphone Samsung Galaxy S23",
+          "price": 9499000.0,
+          "quantity": 2,
+          "image": "default.jpg"
+        }
+      ],
+      "total": 18998000.0,
+      "address": "panammmm",
+      "payment_method": "E-Wallet (GoPay)",
+      "status": "dikirim",
+      "payment_proof": "proof_0e067959_bdd21970.png",
+      "payment_id": "cdfc793b-9dc0-432b-83c0-966e5e844630",
+      "note": "",
+      "created_at": "24-04-2026 17:14"
+    }
+  ],
+  "carts": [
+    {
+      "user_id": "b4644cb3-ff06-4f52-9c70-7003a7e8a5c8",
+      "items": []
+    }
+  ]
+}

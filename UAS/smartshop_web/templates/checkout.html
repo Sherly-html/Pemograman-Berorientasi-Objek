@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Checkout — SmartShop{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="page-title">📋 Checkout</h1>
+  <div class="checkout-wrap">
+    <div class="checkout-form-col">
+      <form method="POST" action="{{ url_for('checkout') }}">
+        <div class="checkout-section">
+          <h3 class="checkout-section-title">📍 Alamat Pengiriman</h3>
+          <div class="form-group">
+            <label class="form-label">Alamat Lengkap</label>
+            <textarea name="address" class="form-input form-textarea" rows="3" required
+              placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota...">{{ address }}</textarea>
+          </div>
+        </div>
+        <div class="checkout-section">
+          <h3 class="checkout-section-title">💳 Metode Pembayaran</h3>
+          <div class="payment-options">
+            <p class="payment-group-label">E-Wallet</p>
+            {% for wallet,icon in [('GoPay','💚'),('OVO','💜'),('DANA','💙'),('ShopeePay','🧡')] %}
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="E-Wallet ({{ wallet }})" required>
+              <span class="payment-icon">{{ icon }}</span>
+              <span class="payment-name">{{ wallet }}</span>
+            </label>
+            {% endfor %}
+            <p class="payment-group-label" style="margin-top:1rem">Transfer Bank</p>
+            {% for bank,icon in [('BCA','🔵'),('Mandiri','🟡'),('BRI','🔵'),('BNI','🟠')] %}
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="Bank Transfer ({{ bank }})" required>
+              <span class="payment-icon">{{ icon }}</span>
+              <span class="payment-name">{{ bank }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Buat Pesanan →</button>
+      </form>
+    </div>
+    <div class="checkout-summary-col">
+      <div class="order-summary-box">
+        <h3 class="summary-title">Pesanan Kamu</h3>
+        {% for item in cart["items"] %}
+        <div class="order-item-row">
+          <span class="order-item-name">{{ item.name }} <span class="order-item-qty">×{{ item.quantity }}</span></span>
+          <span class="order-item-price">Rp {{ "{:,.0f}".format(item.price * item.quantity).replace(",",".") }}</span>
+        </div>
+        {% endfor %}
+        <div class="summary-divider"></div>
+        <div class="summary-total">
+          <span>Total</span>
+          <span>Rp {{ "{:,.0f}".format(total).replace(",",".") }}</span>
+        </div>
+      </div>
+      <a href="{{ url_for('cart') }}" class="back-link">← Kembali ke Keranjang</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
