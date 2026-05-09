@@ -1,0 +1,190 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ═══ STATS CARDS ═══ -->
+<div class="row g-3 mb-4">
+
+  <div class="col-6 col-lg-3">
+    <div class="admin-stat-card color-navy">
+      <div class="asc-icon"><i class="bi bi-newspaper"></i></div>
+      <div class="asc-num">{{ statistik.total_artikel }}</div>
+      <div class="asc-label">Total Artikel</div>
+      <div class="asc-sub">{{ statistik.artikel_published }} published</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="admin-stat-card color-gold">
+      <div class="asc-icon"><i class="bi bi-journal-bookmark"></i></div>
+      <div class="asc-num">{{ statistik.total_kajian }}</div>
+      <div class="asc-label">Total Kajian</div>
+      <div class="asc-sub">Jadwal aktif</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="admin-stat-card color-teal">
+      <div class="asc-icon"><i class="bi bi-megaphone"></i></div>
+      <div class="asc-num">{{ statistik.total_pengumuman }}</div>
+      <div class="asc-label">Pengumuman</div>
+      <div class="asc-sub">{{ statistik.pengumuman_aktif }} aktif</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="admin-stat-card color-purple">
+      <div class="asc-icon"><i class="bi bi-heart"></i></div>
+      <div class="asc-num">∞</div>
+      <div class="asc-label">Keberkahan</div>
+      <div class="asc-sub">Selalu bertambah</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ QUICK ACTIONS ═══ -->
+<div class="admin-card mb-4">
+  <div class="admin-card-header">
+    <h6 class="admin-card-title">
+      <i class="bi bi-lightning-charge me-2"></i>Aksi Cepat
+    </h6>
+  </div>
+  <div class="admin-card-body">
+    <div class="row g-2">
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.tambah_artikel') }}" class="quick-action-btn">
+          <i class="bi bi-plus-circle"></i>
+          <span>Tambah Artikel</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.tambah_kajian') }}" class="quick-action-btn">
+          <i class="bi bi-plus-circle"></i>
+          <span>Tambah Kajian</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('admin.tambah_pengumuman') }}" class="quick-action-btn">
+          <i class="bi bi-plus-circle"></i>
+          <span>Tambah Pengumuman</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('public.home') }}" target="_blank" class="quick-action-btn">
+          <i class="bi bi-eye"></i>
+          <span>Lihat Website</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TABEL ARTIKEL & KAJIAN ═══ -->
+<div class="row g-4">
+
+  <!-- Artikel Terbaru -->
+  <div class="col-12 col-xl-6">
+    <div class="admin-card h-100">
+      <div class="admin-card-header d-flex justify-content-between align-items-center">
+        <h6 class="admin-card-title mb-0">
+          <i class="bi bi-newspaper me-2"></i>Artikel Terbaru
+        </h6>
+        <a href="{{ url_for('admin.kelola_artikel') }}"
+           class="btn btn-outline-navy btn-xs">Lihat Semua</a>
+      </div>
+      <div class="admin-card-body p-0">
+        {% if artikel_terbaru %}
+        <div class="table-responsive">
+          <table class="table admin-table mb-0">
+            <thead>
+              <tr>
+                <th>Judul</th>
+                <th>Kategori</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in artikel_terbaru %}
+              <tr>
+                <td>
+                  <span class="table-judul">
+                    {{ a.judul[:35] }}{% if a.judul|length > 35 %}...{% endif %}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-kategori">{{ a.kategori }}</span>
+                </td>
+                <td>
+                  <span class="status-badge status-{{ a.status }}">
+                    {{ a.status }}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state-sm">
+          <i class="bi bi-newspaper"></i>
+          <p>Belum ada artikel</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Kajian Terbaru -->
+  <div class="col-12 col-xl-6">
+    <div class="admin-card h-100">
+      <div class="admin-card-header d-flex justify-content-between align-items-center">
+        <h6 class="admin-card-title mb-0">
+          <i class="bi bi-journal-bookmark me-2"></i>Kajian Terbaru
+        </h6>
+        <a href="{{ url_for('admin.kelola_kajian') }}"
+           class="btn btn-outline-navy btn-xs">Lihat Semua</a>
+      </div>
+      <div class="admin-card-body p-0">
+        {% if kajian_terbaru %}
+        <div class="table-responsive">
+          <table class="table admin-table mb-0">
+            <thead>
+              <tr>
+                <th>Judul</th>
+                <th>Hari</th>
+                <th>Waktu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for k in kajian_terbaru %}
+              <tr>
+                <td>
+                  <span class="table-judul">
+                    {{ k.judul[:35] }}{% if k.judul|length > 35 %}...{% endif %}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge-hari">{{ k.hari }}</span>
+                </td>
+                <td>{{ k.waktu }} WIB</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state-sm">
+          <i class="bi bi-journal-bookmark"></i>
+          <p>Belum ada kajian</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

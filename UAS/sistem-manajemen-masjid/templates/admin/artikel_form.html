@@ -1,0 +1,126 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ judul_halaman }}{% endblock %}
+{% block page_title %}{{ judul_halaman }}{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-xl-9">
+
+    <!-- Breadcrumb -->
+    <nav class="mb-3">
+      <ol class="breadcrumb breadcrumb-custom">
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('admin.kelola_artikel') }}">Artikel</a>
+        </li>
+        <li class="breadcrumb-item active">{{ judul_halaman }}</li>
+      </ol>
+    </nav>
+
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <h6 class="admin-card-title mb-0">
+          <i class="bi bi-pencil-square me-2"></i>{{ judul_halaman }}
+        </h6>
+      </div>
+      <div class="admin-card-body">
+
+        <form method="POST" novalidate>
+
+          <!-- Judul -->
+          <div class="form-group-modern mb-3">
+            <label class="form-label-modern">
+              Judul Artikel <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="judul" class="form-control form-control-modern"
+                   placeholder="Masukkan judul artikel..."
+                   value="{{ artikel.judul if artikel else '' }}"
+                   required minlength="5"/>
+            <small class="form-hint">Minimal 5 karakter</small>
+          </div>
+
+          <!-- Penulis & Kategori — 2 kolom -->
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-6">
+              <div class="form-group-modern">
+                <label class="form-label-modern">Penulis</label>
+                <input type="text" name="penulis" class="form-control form-control-modern"
+                       placeholder="Nama penulis"
+                       value="{{ artikel.penulis if artikel else 'Admin' }}"/>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group-modern">
+                <label class="form-label-modern">
+                  Kategori <span class="text-danger">*</span>
+                </label>
+                <select name="kategori" class="form-select form-control-modern">
+                  {% for kat in kategori_list %}
+                  <option value="{{ kat }}"
+                    {{ 'selected' if artikel and artikel.kategori == kat }}>
+                    {{ kat }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Konten -->
+          <div class="form-group-modern mb-3">
+            <label class="form-label-modern">
+              Konten Artikel <span class="text-danger">*</span>
+            </label>
+            <textarea name="konten" class="form-control form-control-modern"
+                      rows="10" placeholder="Tulis isi artikel di sini..."
+                      required minlength="20"
+            >{{ artikel.konten if artikel else '' }}</textarea>
+            <small class="form-hint">Minimal 20 karakter</small>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group-modern mb-4">
+            <label class="form-label-modern">Status Publikasi</label>
+            <div class="d-flex gap-3 flex-wrap">
+              <div class="form-check form-check-modern">
+                <input class="form-check-input" type="radio" name="status"
+                       id="statusDraft" value="draft"
+                       {{ 'checked' if not artikel or artikel.status == 'draft' }}>
+                <label class="form-check-label" for="statusDraft">
+                  <i class="bi bi-pencil me-1"></i>Draft
+                </label>
+              </div>
+              <div class="form-check form-check-modern">
+                <input class="form-check-input" type="radio" name="status"
+                       id="statusPublished" value="published"
+                       {{ 'checked' if artikel and artikel.status == 'published' }}>
+                <label class="form-check-label" for="statusPublished">
+                  <i class="bi bi-check-circle me-1"></i>Published
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol Aksi -->
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-navy">
+              <i class="bi bi-save me-2"></i>
+              {{ 'Update Artikel' if artikel else 'Simpan Artikel' }}
+            </button>
+            <a href="{{ url_for('admin.kelola_artikel') }}"
+               class="btn btn-outline-secondary">
+              <i class="bi bi-x-lg me-1"></i>Batal
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
