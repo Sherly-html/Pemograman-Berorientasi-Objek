@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Pengumuman — {{ masjid_info.nama }}{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-12 col-lg-7">
+        <div class="section-badge mb-3">Info Terkini</div>
+        <h1 class="page-header-title">Pengumuman</h1>
+        <p class="page-header-subtitle">
+          Informasi penting dan terkini seputar kegiatan
+          dan program masjid untuk seluruh jamaah.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- DAFTAR PENGUMUMAN -->
+<section class="section-pad">
+  <div class="container">
+
+    {% if pengumuman_list %}
+
+    <!-- Filter Tipe -->
+    <div class="filter-bar mb-4">
+      <div class="filter-scroll">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        {% set tipe_seen = [] %}
+        {% for p in pengumuman_list %}
+          {% if p.tipe not in tipe_seen %}
+            {% set _ = tipe_seen.append(p.tipe) %}
+            <button class="filter-btn" data-filter="{{ p.tipe }}">{{ p.tipe }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="row g-3 justify-content-center" id="pengumumanGrid">
+      {% for p in pengumuman_list %}
+      <div class="col-12 col-lg-10 pengumuman-item" data-tipe="{{ p.tipe }}">
+        <div class="pengumuman-card-full prioritas-{{ p.prioritas }}">
+
+          <!-- Baris atas: icon + judul + badge -->
+          <div class="d-flex align-items-start gap-3">
+
+            <!-- Icon Prioritas -->
+            <div class="pengumuman-icon-lg prioritas-icon-{{ p.prioritas }}">
+              <i class="bi bi-{% if p.prioritas == 'tinggi' %}exclamation-circle-fill{% elif p.prioritas == 'normal' %}megaphone-fill{% else %}info-circle-fill{% endif %}"></i>
+            </div>
+
+            <!-- Konten -->
+            <div class="flex-grow-1 min-w-0">
+
+              <!-- Header -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <h5 class="pengumuman-judul-full mb-0">{{ p.judul }}</h5>
+                <span class="badge bg-{{ p.get_badge() }}">{{ p.tipe }}</span>
+                {% if p.prioritas == 'tinggi' %}
+                <span class="badge bg-danger">Penting!</span>
+                {% endif %}
+              </div>
+
+              <!-- Isi -->
+              <p class="pengumuman-isi-full">{{ p.isi }}</p>
+
+              <!-- Footer info -->
+              <div class="d-flex flex-wrap gap-3 align-items-center">
+                {% if p.tanggal_berlaku %}
+                <span class="pengumuman-meta-chip">
+                  <i class="bi bi-calendar3 me-1"></i>{{ p.tanggal_berlaku }}
+                </span>
+                {% endif %}
+                <span class="pengumuman-meta-chip">
+                  <i class="bi bi-clock me-1"></i>{{ p.created_at[:10] }}
+                </span>
+                <span class="pengumuman-prioritas-text prioritas-text-{{ p.prioritas }}">
+                  <i class="bi bi-flag me-1"></i>Prioritas: {{ p.prioritas|capitalize }}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="empty-state d-none" id="noPengumuman">
+      <i class="bi bi-megaphone"></i>
+      <p>Tidak ada pengumuman dalam kategori ini.</p>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-megaphone"></i>
+      <p>Belum ada pengumuman aktif saat ini.</p>
+      <small>Silakan cek kembali nanti.</small>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    const items  = document.querySelectorAll('.pengumuman-item');
+    let visible  = 0;
+    items.forEach(item => {
+      if (filter === 'all' || item.dataset.tipe === filter) {
+        item.style.display = '';
+        visible++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+    document.getElementById('noPengumuman').classList.toggle('d-none', visible > 0);
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Jadwal Kajian — {{ masjid_info.nama }}{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════ -->
+<section class="page-header">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-12 col-lg-7">
+        <div class="section-badge mb-3">Agenda Masjid</div>
+        <h1 class="page-header-title">Jadwal Kajian</h1>
+        <p class="page-header-subtitle">
+          Ikuti kajian rutin bersama para ustadz pilihan.
+          Tingkatkan ilmu dan iman bersama jamaah masjid.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     DAFTAR KAJIAN
+═══════════════════════════════════════════ -->
+<section class="section-pad">
+  <div class="container">
+
+    {% if kajian_list %}
+
+    <!-- Filter Hari — Responsive scroll on mobile -->
+    <div class="filter-bar mb-4">
+      <div class="filter-scroll">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        {% set hari_list = [] %}
+        {% for k in kajian_list %}
+          {% if k.hari not in hari_list %}
+            {% set _ = hari_list.append(k.hari) %}
+            <button class="filter-btn" data-filter="{{ k.hari }}">{{ k.hari }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Grid Kajian -->
+    <div class="row g-4" id="kajianGrid">
+      {% for k in kajian_list %}
+      <div class="col-12 col-md-6 col-lg-4 kajian-item" data-hari="{{ k.hari }}">
+        <div class="kajian-card-full h-100">
+
+          <!-- Header Card -->
+          <div class="kajian-card-header">
+            <div class="kajian-hari-badge-lg">{{ k.hari }}</div>
+            <div class="kajian-waktu-chip">
+              <i class="bi bi-clock me-1"></i>{{ k.waktu }} WIB
+            </div>
+          </div>
+
+          <!-- Body Card -->
+          <div class="kajian-card-body">
+            <h5 class="kajian-judul-full">{{ k.judul }}</h5>
+
+            {% if k.deskripsi %}
+            <p class="kajian-desc-full">
+              {{ k.deskripsi[:100] }}{% if k.deskripsi|length > 100 %}...{% endif %}
+            </p>
+            {% endif %}
+
+            <div class="kajian-detail-list">
+              <div class="kajian-detail-item">
+                <div class="kjd-icon"><i class="bi bi-person-badge-fill"></i></div>
+                <div class="kjd-content">
+                  <span class="kjd-label">Pemateri</span>
+                  <span class="kjd-value">{{ k.pemateri }}</span>
+                </div>
+              </div>
+              <div class="kajian-detail-item">
+                <div class="kjd-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div class="kjd-content">
+                  <span class="kjd-label">Lokasi</span>
+                  <span class="kjd-value">{{ k.lokasi }}</span>
+                </div>
+              </div>
+              <div class="kajian-detail-item">
+                <div class="kjd-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="kjd-content">
+                  <span class="kjd-label">Kapasitas</span>
+                  <span class="kjd-value">{{ k.kuota }} orang</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Card -->
+          <div class="kajian-card-footer">
+            <span class="kajian-id-chip">
+              <i class="bi bi-hash"></i>{{ k.id }}
+            </span>
+            <span class="kajian-jadwal-chip">
+              {{ k.get_jadwal_lengkap() }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- No result saat filter -->
+    <div class="empty-state d-none" id="noKajian">
+      <i class="bi bi-journal-bookmark"></i>
+      <p>Tidak ada kajian pada hari ini.</p>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-journal-bookmark"></i>
+      <p>Belum ada jadwal kajian yang tersedia.</p>
+      <small>Silakan cek kembali nanti.</small>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter kajian berdasarkan hari
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+
+    const filter = this.dataset.filter;
+    const items  = document.querySelectorAll('.kajian-item');
+    let visible  = 0;
+
+    items.forEach(item => {
+      if (filter === 'all' || item.dataset.hari === filter) {
+        item.style.display = '';
+        visible++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Tampilkan pesan kosong jika tidak ada hasil
+    const noResult = document.getElementById('noKajian');
+    noResult.classList.toggle('d-none', visible > 0);
+  });
+});
+</script>
+{% endblock %}

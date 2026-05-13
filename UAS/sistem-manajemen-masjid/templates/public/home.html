@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block title %}Beranda — {{ masjid_info.nama }}{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════ -->
+<section class="hero-section">
+  <div class="hero-bg-pattern"></div>
+  <div class="container hero-container">
+    <div class="row align-items-center min-vh-hero">
+
+      <!-- Teks Hero -->
+      <div class="col-12 col-lg-6 hero-text-col">
+        <div class="hero-badge mb-3">
+          <i class="bi bi-moon-stars me-2"></i>Selamat Datang
+        </div>
+        <h1 class="hero-title">
+          {{ masjid_info.nama }}
+        </h1>
+        <p class="hero-subtitle">
+          Pusat kegiatan islami, kajian ilmu, dan pemberdayaan umat
+          di {{ masjid_info.kota }}. Mari bersama membangun masjid yang makmur.
+        </p>
+        <div class="hero-actions d-flex flex-wrap gap-3">
+          <a href="{{ url_for('public.kajian') }}" class="btn btn-gold btn-lg">
+            <i class="bi bi-journal-bookmark me-2"></i>Lihat Kajian
+          </a>
+          <a href="{{ url_for('public.donasi') }}" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-heart me-2"></i>Donasi Masjid
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="col-12 col-lg-6 hero-stats-col mt-5 mt-lg-0">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-journal-text"></i></div>
+              <div class="stat-num">{{ artikel_terbaru|length }}+</div>
+              <div class="stat-label">Artikel Islami</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-people"></i></div>
+              <div class="stat-num">{{ kajian_terbaru|length }}+</div>
+              <div class="stat-label">Jadwal Kajian</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-megaphone"></i></div>
+              <div class="stat-num">{{ pengumuman_aktif|length }}+</div>
+              <div class="stat-label">Pengumuman</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-heart"></i></div>
+              <div class="stat-num">∞</div>
+              <div class="stat-label">Keberkahan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- Wave bottom -->
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg-body)"/>
+    </svg>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     JADWAL SHOLAT STRIP
+═══════════════════════════════════════════ -->
+<section class="sholat-strip py-3">
+  <div class="container">
+    <div class="sholat-bar d-flex flex-wrap justify-content-center align-items-center gap-2 gap-md-4">
+      <span class="sholat-label"><i class="bi bi-clock me-1"></i>Jadwal Sholat Hari Ini</span>
+      {% set waktu_sholat = [
+        ('Subuh','04:32'),('Dzuhur','12:01'),('Ashar','15:18'),
+        ('Maghrib','17:58'),('Isya','19:10')
+      ] %}
+      {% for nama, waktu in waktu_sholat %}
+      <div class="sholat-item">
+        <span class="sholat-nama">{{ nama }}</span>
+        <span class="sholat-waktu">{{ waktu }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     ARTIKEL TERBARU
+═══════════════════════════════════════════ -->
+<section class="section-pad">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="section-header text-center mb-5">
+      <div class="section-badge">Konten Terbaru</div>
+      <h2 class="section-title">Artikel Islami</h2>
+      <p class="section-subtitle">Pelajari ilmu agama melalui artikel pilihan dari para ustadz</p>
+    </div>
+
+    {% if artikel_terbaru %}
+    <div class="row g-4">
+      {% for a in artikel_terbaru %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="content-card h-100">
+          <div class="card-kategori-badge badge-{{ a.kategori|lower }}">
+            {{ a.kategori }}
+          </div>
+          <h5 class="card-judul">{{ a.judul }}</h5>
+          <p class="card-preview">{{ a.get_preview(120) }}</p>
+          <div class="card-meta d-flex justify-content-between align-items-center">
+            <span class="card-penulis">
+              <i class="bi bi-person me-1"></i>{{ a.penulis }}
+            </span>
+            <span class="card-tanggal">
+              <i class="bi bi-calendar3 me-1"></i>
+              {{ a.created_at[:10] }}
+            </span>
+          </div>
+          <a href="{{ url_for('public.artikel_detail', id=a.id) }}"
+             class="btn btn-navy btn-sm mt-3 w-100">
+            Baca Selengkapnya <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('public.artikel') }}" class="btn btn-outline-navy">
+        Lihat Semua Artikel <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-newspaper"></i>
+      <p>Belum ada artikel yang dipublish.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     KAJIAN TERBARU
+═══════════════════════════════════════════ -->
+<section class="section-pad bg-light-custom">
+  <div class="container">
+
+    <div class="section-header text-center mb-5">
+      <div class="section-badge">Agenda Masjid</div>
+      <h2 class="section-title">Jadwal Kajian</h2>
+      <p class="section-subtitle">Ikuti kajian rutin dan tingkatkan ilmu agamamu</p>
+    </div>
+
+    {% if kajian_terbaru %}
+    <div class="row g-4">
+      {% for k in kajian_terbaru %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="kajian-card h-100">
+          <div class="kajian-hari-badge">{{ k.hari }}</div>
+          <h5 class="kajian-judul">{{ k.judul }}</h5>
+          <div class="kajian-info">
+            <div class="kajian-info-item">
+              <i class="bi bi-person-badge"></i>
+              <span>{{ k.pemateri }}</span>
+            </div>
+            <div class="kajian-info-item">
+              <i class="bi bi-clock"></i>
+              <span>{{ k.waktu }} WIB</span>
+            </div>
+            <div class="kajian-info-item">
+              <i class="bi bi-geo-alt"></i>
+              <span>{{ k.lokasi }}</span>
+            </div>
+            <div class="kajian-info-item">
+              <i class="bi bi-people"></i>
+              <span>Kuota: {{ k.kuota }} orang</span>
+            </div>
+          </div>
+          {% if k.deskripsi %}
+          <p class="kajian-desc">{{ k.deskripsi[:80] }}{% if k.deskripsi|length > 80 %}...{% endif %}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('public.kajian') }}" class="btn btn-outline-navy">
+        Lihat Semua Kajian <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-journal-bookmark"></i>
+      <p>Belum ada jadwal kajian.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     PENGUMUMAN
+═══════════════════════════════════════════ -->
+<section class="section-pad">
+  <div class="container">
+
+    <div class="section-header text-center mb-5">
+      <div class="section-badge">Info Terkini</div>
+      <h2 class="section-title">Pengumuman</h2>
+      <p class="section-subtitle">Informasi penting seputar kegiatan masjid</p>
+    </div>
+
+    {% if pengumuman_aktif %}
+    <div class="row g-3 justify-content-center">
+      {% for p in pengumuman_aktif %}
+      <div class="col-12 col-lg-10">
+        <div class="pengumuman-card prioritas-{{ p.prioritas }}">
+          <div class="d-flex flex-wrap align-items-start gap-2">
+            <div class="pengumuman-icon">
+              <i class="bi bi-{% if p.prioritas == 'tinggi' %}exclamation-circle-fill{% else %}megaphone-fill{% endif %}"></i>
+            </div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h6 class="pengumuman-judul mb-0">{{ p.judul }}</h6>
+                <span class="badge bg-{{ p.get_badge() }} badge-sm">{{ p.tipe }}</span>
+              </div>
+              <p class="pengumuman-isi mb-0">{{ p.isi[:150] }}{% if p.isi|length > 150 %}...{% endif %}</p>
+              {% if p.tanggal_berlaku %}
+              <small class="pengumuman-tanggal">
+                <i class="bi bi-calendar3 me-1"></i>{{ p.tanggal_berlaku }}
+              </small>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('public.pengumuman') }}" class="btn btn-outline-navy">
+        Lihat Semua Pengumuman <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <i class="bi bi-megaphone"></i>
+      <p>Belum ada pengumuman aktif.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     CTA DONASI
+═══════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box text-center">
+      <div class="cta-icon mb-3">
+        <i class="bi bi-heart-fill"></i>
+      </div>
+      <h2 class="cta-title">Dukung Kemakmuran Masjid</h2>
+      <p class="cta-subtitle">
+        Setiap donasi Anda berkontribusi untuk kegiatan masjid,
+        pembangunan, dan program sosial umat Islam.
+      </p>
+      <a href="{{ url_for('public.donasi') }}" class="btn btn-gold btn-lg">
+        <i class="bi bi-heart me-2"></i>Donasi Sekarang
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
